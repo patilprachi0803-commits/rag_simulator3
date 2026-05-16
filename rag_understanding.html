@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>RAG Simulator</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Inter,system-ui,sans-serif;
+}
+
+body{
+    background:#0f172a;
+    color:white;
+    padding:30px;
+    min-height:100vh;
+}
+
+.container{
+    max-width:1400px;
+    margin:auto;
+}
+
+.title{
+    margin-bottom:30px;
+}
+
+.title h1{
+    font-size:48px;
+    margin-bottom:10px;
+    background:linear-gradient(to right,#38bdf8,#8b5cf6);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.title p{
+    color:#94a3b8;
+    line-height:1.7;
+}
+
+.layout{
+    display:grid;
+    grid-template-columns:420px 1fr;
+    gap:24px;
+}
+
+.card{
+    background:#111827;
+    border-radius:24px;
+    padding:24px;
+    border:1px solid rgba(255,255,255,0.06);
+    box-shadow:0 10px 40px rgba(0,0,0,0.35);
+}
+
+.card h2{
+    margin-bottom:18px;
+    font-size:22px;
+}
+
+textarea,
+input{
+    width:100%;
+    background:#0f172a;
+    color:white;
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:16px;
+    padding:16px;
+    font-size:15px;
+    outline:none;
+}
+
+textarea{
+    min-height:220px;
+    resize:vertical;
+    line-height:1.7;
+}
+
+input{
+    margin-top:18px;
+}
+
+button{
+    width:100%;
+    margin-top:18px;
+    padding:16px;
+    border:none;
+    border-radius:16px;
+    background:linear-gradient(to right,#3b82f6,#8b5cf6);
+    color:white;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+button:hover{
+    transform:translateY(-2px);
+}
+
+.step{
+    margin-bottom:22px;
+    background:#0f172a;
+    border-radius:18px;
+    padding:22px;
+    border:1px solid rgba(255,255,255,0.05);
+}
+
+.step h3{
+    color:#38bdf8;
+    margin-bottom:16px;
+    font-size:20px;
+}
+
+.chunk{
+    background:#1e293b;
+    padding:14px;
+    border-radius:14px;
+    margin-bottom:12px;
+    line-height:1.7;
+}
+
+.vector{
+    margin-top:10px;
+    background:#020617;
+    padding:12px;
+    border-radius:12px;
+    font-family:monospace;
+    color:#67e8f9;
+    overflow:auto;
+}
+
+.match{
+    border:1px solid #8b5cf6;
+    background:rgba(139,92,246,0.12);
+}
+
+.score{
+    margin-bottom:8px;
+    color:#cbd5e1;
+    font-size:14px;
+}
+
+.pipeline{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:20px;
+}
+
+.pipe{
+    padding:10px 16px;
+    border-radius:999px;
+    background:#1e293b;
+    font-size:14px;
+    color:#cbd5e1;
+}
+
+.highlight{
+    background:linear-gradient(to right,#3b82f6,#8b5cf6);
+    color:white;
+}
+
+.response{
+    background:#020617;
+    border-left:4px solid #38bdf8;
+    padding:18px;
+    border-radius:12px;
+    line-height:1.8;
+    color:#e2e8f0;
+}
+
+@media(max-width:1000px){
+
+    .layout{
+        grid-template-columns:1fr;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="title">
+        <h1>RAG Simulator</h1>
+
+        <p>
+            Learn how Retrieval-Augmented Generation works internally.
+            This simulator demonstrates:
+            Knowledge Base → Chunking → Embeddings → Vector Search →
+            Retrieval → LLM Response.
+        </p>
+    </div>
+
+    <div class="layout">
+
+        <div class="card">
+
+            <h2>Knowledge Base</h2>
+
+            <textarea id="knowledgeBase">
+Artificial Intelligence helps machines simulate human intelligence.
+
+Machine learning is a subset of AI.
+
+RAG stands for Retrieval-Augmented Generation.
+
+Embeddings convert text into vectors.
+
+Vector databases store embeddings for semantic search.
+
+Chunking divides large documents into smaller meaningful pieces.
+
+The retriever fetches top relevant chunks.
+
+LLMs generate answers using retrieved context.
+            </textarea>
+
+            <h2 style="margin-top:24px;">User Query</h2>
+
+            <input 
+                id="queryInput"
+                value="What does RAG use to retrieve relevant information?"
+            />
+
+            <button onclick="runRAG()">
+                Run RAG Pipeline
+            </button>
+
+            <div class="pipeline">
+                <div class="pipe">Knowledge Base</div>
+                <div class="pipe">Chunking</div>
+                <div class="pipe">Embeddings</div>
+                <div class="pipe">Vector DB</div>
+                <div class="pipe">Similarity Search</div>
+                <div class="pipe highlight">LLM</div>
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <h2>RAG Internal Workflow</h2>
+
+            <div id="output"></div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+function createEmbedding(text){
+
+    let vector = [];
+
+    for(let i=0;i<10;i++){
+
+        let total = 0;
+
+        for(let j=0;j<text.length;j++){
+
+            total += text.charCodeAt(j) * (i + 1);
+
+        }
+
+        vector.push((total % 1000) / 1000);
+
+    }
+
+    return vector;
+
+}
+
+function cosineSimilarity(vec1, vec2){
+
+    let score = 0;
+
+    for(let i=0;i<vec1.length;i++){
+
+        score += (1 - Math.abs(vec1[i] - vec2[i]));
+
+    }
+
+    return score.toFixed(2);
+
+}
+
+function runRAG(){
+
+    const kb = document.getElementById("knowledgeBase").value;
+
+    const query = document.getElementById("queryInput").value;
+
+    const output = document.getElementById("output");
+
+    output.innerHTML = "";
+
+    // STEP 1 CHUNKING
+
+    const chunks = kb
+        .split(".")
+        .map(chunk => chunk.trim())
+        .filter(chunk => chunk.length > 0);
+
+    // STEP 2 EMBEDDINGS
+
+    const embeddedChunks = chunks.map(chunk => {
+
+        return {
+            text: chunk,
+            vector: createEmbedding(chunk)
+        };
+
+    });
+
+    // STEP 3 QUERY EMBEDDING
+
+    const queryVector = createEmbedding(query);
+
+    // STEP 4 SIMILARITY SEARCH
+
+    const scoredChunks = embeddedChunks.map(chunk => {
+
+        return {
+            ...chunk,
+            score: cosineSimilarity(chunk.vector, queryVector)
+        };
+
+    });
+
+    scoredChunks.sort((a,b) => b.score - a.score);
+
+    // STEP 5 TOP K RETRIEVAL
+
+    const topChunks = scoredChunks.slice(0,3);
+
+    // STEP 1 UI
+
+    output.innerHTML += `
+    
+        <div class="step">
+
+            <h3>Step 1: Chunking</h3>
+
+            ${chunks.map(chunk => `
+            
+                <div class="chunk">
+                    ${chunk}
+                </div>
+            
+            `).join("")}
+
+        </div>
+    
+    `;
+
+    // STEP 2 UI
+
+    output.innerHTML += `
+    
+        <div class="step">
+
+            <h3>Step 2: Create Embeddings</h3>
+
+            ${embeddedChunks.map(chunk => `
+            
+                <div class="chunk">
+
+                    ${chunk.text}
+
+                    <div class="vector">
+                        [${chunk.vector.join(", ")}]
+                    </div>
+
+                </div>
+            
+            `).join("")}
+
+        </div>
+    
+    `;
+
+    // STEP 3 UI
+
+    output.innerHTML += `
+    
+        <div class="step">
+
+            <h3>Step 3: Convert Query Into Vector</h3>
+
+            <div class="chunk">
+
+                ${query}
+
+                <div class="vector">
+                    [${queryVector.join(", ")}]
+                </div>
+
+            </div>
+
+        </div>
+    
+    `;
+
+    // STEP 4 UI
+
+    output.innerHTML += `
+    
+        <div class="step">
+
+            <h3>Step 4: Semantic Similarity Search</h3>
+
+            ${scoredChunks.map(chunk => `
+            
+                <div class="chunk ${topChunks.includes(chunk) ? 'match' : ''}">
+
+                    <div class="score">
+                        Similarity Score: ${chunk.score}
+                    </div>
+
+                    ${chunk.text}
+
+                </div>
+            
+            `).join("")}
+
+        </div>
+    
+    `;
+
+    // STEP 5 UI
+
+    output.innerHTML += `
+    
+        <div class="step">
+
+            <h3>Step 5: Retriever Fetches Top Chunks</h3>
+
+            ${topChunks.map(chunk => `
+            
+                <div class="chunk match">
+
+                    ${chunk.text}
+
+                </div>
+            
+            `).join("")}
+
+        </div>
+    
+    `;
+
+    // STEP 6 UI
+
+    output.innerHTML += `
+    
+        <div class="step">
+
+            <h3>Step 6: LLM Generates Final Response</h3>
+
+            <div class="response">
+
+                The retriever searches vector embeddings using semantic similarity.
+                It fetches the most relevant chunks from the vector database and sends them,
+                along with the user query, to the LLM for grounded response generation.
+
+            </div>
+
+        </div>
+    
+    `;
+
+}
+
+runRAG();
+
+</script>
+
+</body>
+</html>
