@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prachi Patil | Product & Innovation Resume</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #050816;
+      --card: rgba(17, 25, 40, 0.75);
+      --primary: #7c3aed;
+      --secondary: #06b6d4;
+      --accent: #22c55e;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --border: rgba(255,255,255,0.08);
+      --glow: 0 0 30px rgba(124, 58, 237, 0.35);
+    }
+
+    body {
+      background: radial-gradient(circle at top right, rgba(124,58,237,0.2), transparent 30%),
+                  radial-gradient(circle at bottom left, rgba(6,182,212,0.15), transparent 30%),
+                  var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .container {
+      width: min(1200px, 92%);
+      margin: auto;
+      padding: 40px 0 80px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.3fr 0.7fr;
+      gap: 30px;
+      align-items: center;
+      min-height: 90vh;
+    }
+
+    .glass {
+      background: var(--card);
+      backdrop-filter: blur(18px);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 30px;
+      box-shadow: var(--glow);
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(124,58,237,0.12);
+      color: #c4b5fd;
+      border: 1px solid rgba(124,58,237,0.35);
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-size: 14px;
+      margin-bottom: 22px;
+      letter-spacing: 0.5px;
+    }
+
+    h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 72px;
+      line-height: 1;
+      margin-bottom: 16px;
+      letter-spacing: -2px;
+    }
+
+    .gradient {
+      background: linear-gradient(90deg, #8b5cf6, #06b6d4, #22c55e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      font-size: 22px;
+      color: var(--muted);
+      margin-bottom: 24px;
+      max-width: 720px;
+    }
+
+    .summary {
+      font-size: 16px;
+      color: #dbeafe;
+      margin-bottom: 28px;
+      max-width: 750px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 30px;
+    }
+
+    .btn {
+      padding: 14px 22px;
+      border-radius: 14px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .primary-btn {
+      background: linear-gradient(135deg, #7c3aed, #06b6d4);
+      color: white;
+      box-shadow: 0 10px 25px rgba(124,58,237,0.4);
+    }
+
+    .secondary-btn {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.12);
+      color: white;
+    }
+
+    .btn:hover {
+      transform: translateY(-4px);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+
+    .stat-card {
+      padding: 22px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(124,58,237,0.5);
+    }
+
+    .stat-number {
+      font-size: 36px;
+      font-weight: 700;
+      font-family: 'Space Grotesk', sans-serif;
+      margin-bottom: 6px;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .section {
+      margin-top: 70px;
+    }
+
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 42px;
+      margin-bottom: 26px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .timeline-item {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(#7c3aed, #06b6d4);
+      border-radius: 10px;
+    }
+
+    .timeline-content {
+      padding-left: 24px;
+    }
+
+    .role {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .company {
+      color: #c4b5fd;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .description {
+      color: #d1d5db;
+    }
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .skill-box {
+      padding: 22px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .skill-box h3 {
+      margin-bottom: 14px;
+      color: white;
+    }
+
+    .chip-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .chip {
+      background: rgba(124,58,237,0.12);
+      border: 1px solid rgba(124,58,237,0.3);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 14px;
+      color: #ddd6fe;
+    }
+
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .project-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .project-card::after {
+      content: '';
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(124,58,237,0.25), transparent 70%);
+      top: -60px;
+      right: -60px;
+    }
+
+    .project-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .project-tag {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      margin-bottom: 16px;
+      background: rgba(6,182,212,0.12);
+      border: 1px solid rgba(6,182,212,0.3);
+      color: #67e8f9;
+    }
+
+    footer {
+      margin-top: 70px;
+      text-align: center;
+      color: var(--muted);
+      padding-bottom: 40px;
+    }
+
+    .floating-orb {
+      position: fixed;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.15;
+      z-index: -1;
+      animation: float 10s infinite alternate ease-in-out;
+    }
+
+    .orb1 {
+      background: #7c3aed;
+      top: 10%;
+      left: 5%;
+    }
+
+    .orb2 {
+      background: #06b6d4;
+      bottom: 10%;
+      right: 5%;
+      animation-delay: 2s;
+    }
+
+    @keyframes float {
+      from {
+        transform: translateY(0px) translateX(0px);
+      }
+      to {
+        transform: translateY(-30px) translateX(20px);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 52px;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 42px;
+      }
+
+      .section-title {
+        font-size: 32px;
+      }
+
+      .subtitle {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="floating-orb orb1"></div>
+  <div class="floating-orb orb2"></div>
+
+  <div class="container">
+
+    <section class="hero">
+      <div class="glass">
+        <div class="tag">
+          <span>●</span>
+          Product Management • AI Innovation • Sustainability
+        </div>
+
+        <h1>
+          Prachi <span class="gradient">Patil</span>
+        </h1>
+
+        <p class="subtitle">
+          Aspiring Product Manager building future focused products at the intersection of AI, sustainability, and human behavior.
+        </p>
+
+        <p class="summary">
+          Strong focus on identifying overlooked user pain points and converting them into scalable product opportunities. Currently exploring AI driven healthcare systems, textile recycling innovation, sustainable manufacturing, and consumer product experiences. Hands-on with product thinking, user research, prototyping, presentation storytelling, and strategic problem solving.
+        </p>
+
+        <div class="hero-actions">
+          <a href="#projects" class="btn primary-btn">Explore Projects</a>
+          <a href="#contact" class="btn secondary-btn">Connect</a>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat-card glass">
+          <div class="stat-number">4+</div>
+          <div class="stat-label">Innovation Domains Explored</div>
+        </div>
+
+        <div class="stat-card glass">
+          <div class="stat-number">AI</div>
+          <div class="stat-label">Healthcare & Product Systems</div>
+        </div>
+
+        <div class="stat-card glass">
+          <div class="stat-number">PM</div>
+          <div class="stat-label">Product Thinking & UX Strategy</div>
+        </div>
+
+        <div class="stat-card glass">
+          <div class="stat-number">Zero Waste</div>
+          <div class="stat-label">Sustainability Driven Innovation</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">
+        <span class="gradient">Experience & Exploration</span>
+      </h2>
+
+      <div class="timeline">
+
+        <div class="timeline-item glass">
+          <div class="timeline-content">
+            <div class="role">Product Management Projects</div>
+            <div class="company">Consumer Product Case Studies & Feature Design</div>
+            <div class="description">
+              Worked on deep product analysis assignments including consumer behavior, UX friction analysis, feature prioritization, root cause analysis, and storytelling. Created product improvement concepts for food-tech platforms with focus on healthy discovery systems and trust-based experiences.
+            </div>
+          </div>
+        </div>
+
+        <div class="timeline-item glass">
+          <div class="timeline-content">
+            <div class="role">Textile Recycling Innovation</div>
+            <div class="company">Sustainability Focused Product Exploration</div>
+            <div class="description">
+              Developed concepts around converting textile waste into insulation products, sports products, soft toys, home décor, and biodegradable statues. Explored circular economy models and waste reduction opportunities through scalable manufacturing approaches.
+            </div>
+          </div>
+        </div>
+
+        <div class="timeline-item glass">
+          <div class="timeline-content">
+            <div class="role">AI Healthcare System Ideation</div>
+            <div class="company">Healthcare + AI Workflow Design</div>
+            <div class="description">
+              Explored AI driven systems for appointment booking, digital prescriptions, patient record tracking, and medical inventory management with the goal of reducing operational inefficiencies in healthcare environments.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">
+        <span class="gradient">Core Skills</span>
+      </h2>
+
+      <div class="skills-grid">
+
+        <div class="skill-box glass">
+          <h3>Product Management</h3>
+          <div class="chip-container">
+            <div class="chip">User Research</div>
+            <div class="chip">Product Thinking</div>
+            <div class="chip">Feature Prioritization</div>
+            <div class="chip">Wireframing</div>
+            <div class="chip">Problem Solving</div>
+          </div>
+        </div>
+
+        <div class="skill-box glass">
+          <h3>Innovation Areas</h3>
+          <div class="chip-container">
+            <div class="chip">AI Systems</div>
+            <div class="chip">Sustainability</div>
+            <div class="chip">Healthcare Tech</div>
+            <div class="chip">Food-Tech</div>
+            <div class="chip">Circular Economy</div>
+          </div>
+        </div>
+
+        <div class="skill-box glass">
+          <h3>Technical & Tools</h3>
+          <div class="chip-container">
+            <div class="chip">HTML</div>
+            <div class="chip">CSS</div>
+            <div class="chip">JavaScript</div>
+            <div class="chip">Presentation Design</div>
+            <div class="chip">Prototyping</div>
+          </div>
+        </div>
+
+        <div class="skill-box glass">
+          <h3>Mindset</h3>
+          <div class="chip-container">
+            <div class="chip">Systems Thinking</div>
+            <div class="chip">Future Focused</div>
+            <div class="chip">Execution Oriented</div>
+            <div class="chip">Analytical</div>
+            <div class="chip">Curiosity Driven</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="section" id="projects">
+      <h2 class="section-title">
+        <span class="gradient">Highlighted Projects</span>
+      </h2>
+
+      <div class="project-grid">
+
+        <div class="project-card glass">
+          <div class="project-tag">Product Strategy</div>
+          <div class="project-title">Healthy Mode Reimagined</div>
+          <p>
+            Redesigned healthy food discovery for a food-tech platform by identifying trust gaps in nutrition visibility and unhealthy product recommendations within wellness flows.
+          </p>
+        </div>
+
+        <div class="project-card glass">
+          <div class="project-tag">Sustainability</div>
+          <div class="project-title">Textile Waste Transformation</div>
+          <p>
+            Conceptualized reusable textile waste products including insulation materials, sports products, soft toys, and sustainable décor to reduce landfill dependency.
+          </p>
+        </div>
+
+        <div class="project-card glass">
+          <div class="project-tag">AI + Healthcare</div>
+          <div class="project-title">Smart Medical Workflow System</div>
+          <p>
+            Designed an integrated healthcare operations concept using AI for appointments, prescription digitization, patient history tracking, and pharmacy inventory management.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">
+        <span class="gradient">What Makes Me Different</span>
+      </h2>
+
+      <div class="glass">
+        <p class="description">
+          Most aspiring product managers focus only on digital interfaces. My approach combines sustainability, operations, AI systems, human behavior, and business scalability together. I actively look for invisible inefficiencies in industries and convert them into product opportunities with long term impact.
+          <br><br>
+          Current focus areas include:
+          <br><br>
+          • Sustainable manufacturing systems
+          <br>
+          • AI assisted operational workflows
+          <br>
+          • Consumer trust in digital products
+          <br>
+          • Circular economy innovation
+          <br>
+          • Healthcare process optimization
+        </p>
+      </div>
+    </section>
+
+    <section class="section" id="contact">
+      <h2 class="section-title">
+        <span class="gradient">Contact</span>
+      </h2>
+
+      <div class="glass">
+        <p class="description">
+          Email: yourmail@example.com
+          <br>
+          LinkedIn: linkedin.com/in/yourprofile
+          <br>
+          Portfolio: yourportfolio.com
+          <br><br>
+          Open to product management internships, innovation projects, startup collaborations, and sustainability driven opportunities.
+        </p>
+      </div>
+    </section>
+
+    <footer>
+      Designed for ambitious builders who think beyond traditional products.
+    </footer>
+
+  </div>
+
+  <script>
+    const cards = document.querySelectorAll('.glass');
+
+    cards.forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        card.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(124,58,237,0.18), rgba(17,25,40,0.82) 45%)`;
+      });
+
+      card.addEventListener('mouseleave', () => {
+        card.style.background = 'rgba(17, 25, 40, 0.75)';
+      });
+    });
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+  </script>
+
+</body>
+</html>
