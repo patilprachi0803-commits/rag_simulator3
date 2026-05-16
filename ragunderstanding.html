@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>RAG Simulator</title>
+
+<style>
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+        font-family:Inter,system-ui,sans-serif;
+    }
+
+    body{
+        background:#0f172a;
+        color:white;
+        min-height:100vh;
+        padding:30px;
+    }
+
+    .container{
+        max-width:1400px;
+        margin:auto;
+    }
+
+    .header{
+        margin-bottom:30px;
+    }
+
+    .header h1{
+        font-size:42px;
+        margin-bottom:10px;
+        background:linear-gradient(to right,#38bdf8,#818cf8);
+        -webkit-background-clip:text;
+        -webkit-text-fill-color:transparent;
+    }
+
+    .header p{
+        color:#94a3b8;
+        line-height:1.7;
+    }
+
+    .grid{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:24px;
+    }
+
+    .card{
+        background:#111827;
+        border:1px solid rgba(255,255,255,0.08);
+        border-radius:22px;
+        padding:22px;
+        box-shadow:0 10px 30px rgba(0,0,0,0.25);
+    }
+
+    .card h2{
+        margin-bottom:18px;
+        font-size:22px;
+        color:#e2e8f0;
+    }
+
+    textarea{
+        width:100%;
+        min-height:160px;
+        background:#0f172a;
+        border:1px solid rgba(255,255,255,0.08);
+        border-radius:14px;
+        padding:16px;
+        color:white;
+        resize:vertical;
+        outline:none;
+        font-size:15px;
+        line-height:1.6;
+    }
+
+    input{
+        width:100%;
+        background:#0f172a;
+        border:1px solid rgba(255,255,255,0.08);
+        border-radius:14px;
+        padding:16px;
+        color:white;
+        outline:none;
+        font-size:15px;
+    }
+
+    button{
+        margin-top:18px;
+        border:none;
+        padding:14px 22px;
+        border-radius:14px;
+        background:linear-gradient(to right,#3b82f6,#8b5cf6);
+        color:white;
+        font-weight:600;
+        cursor:pointer;
+        transition:0.3s;
+    }
+
+    button:hover{
+        transform:translateY(-2px);
+        opacity:0.95;
+    }
+
+    .step{
+        margin-bottom:22px;
+        padding:18px;
+        border-radius:16px;
+        background:#0f172a;
+        border:1px solid rgba(255,255,255,0.05);
+    }
+
+    .step-title{
+        font-size:18px;
+        margin-bottom:10px;
+        color:#38bdf8;
+    }
+
+    .chunk{
+        background:#1e293b;
+        padding:12px;
+        border-radius:12px;
+        margin-top:10px;
+        line-height:1.6;
+    }
+
+    .vector{
+        margin-top:10px;
+        font-family:monospace;
+        color:#a5f3fc;
+        background:#020617;
+        padding:12px;
+        border-radius:10px;
+        overflow:auto;
+    }
+
+    .match{
+        border:1px solid #8b5cf6;
+        background:rgba(139,92,246,0.12);
+    }
+
+    .llm-box{
+        margin-top:14px;
+        background:#020617;
+        border-left:4px solid #38bdf8;
+        padding:16px;
+        border-radius:10px;
+        line-height:1.8;
+        color:#e2e8f0;
+    }
+
+    .pipeline{
+        display:flex;
+        flex-wrap:wrap;
+        gap:12px;
+        margin-top:25px;
+    }
+
+    .pipe{
+        padding:12px 18px;
+        border-radius:999px;
+        background:#1e293b;
+        border:1px solid rgba(255,255,255,0.08);
+        color:#cbd5e1;
+        font-size:14px;
+    }
+
+    .highlight{
+        background:linear-gradient(to right,#3b82f6,#8b5cf6);
+        color:white;
+    }
+
+    @media(max-width:1000px){
+        .grid{
+            grid-template-columns:1fr;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>RAG Simulator</h1>
+        <p>
+            Understand how Retrieval-Augmented Generation works internally.
+            This simulator demonstrates:
+            Chunking → Embeddings → Vector Search → Retrieval → LLM Context Injection.
+        </p>
+    </div>
+
+    <div class="grid">
+
+        <div class="card">
+            <h2>1. Create Knowledge Base</h2>
+
+            <textarea id="knowledgeBase">
+Zomato healthy mode currently shows unhealthy food along with healthy food.
+
+Users feel confused because there is no strong distinction between healthy and unhealthy meals.
+
+People trying to maintain diet discipline want quick identification of healthy meals.
+
+A better healthy mode should include strict filtering, calorie badges, protein indicators, and health scores.
+
+AI can personalize recommendations based on fitness goals and previous orders.
+            </textarea>
+
+            <h2 style="margin-top:20px;">2. User Query</h2>
+
+            <input 
+                id="queryInput" 
+                value="How can Zomato improve healthy mode?"
+            />
+
+            <button onclick="runRAG()">
+                Run RAG Pipeline
+            </button>
+
+            <div class="pipeline">
+                <div class="pipe">Documents</div>
+                <div class="pipe">Chunking</div>
+                <div class="pipe">Embeddings</div>
+                <div class="pipe">Vector Search</div>
+                <div class="pipe">Retriever</div>
+                <div class="pipe highlight">LLM Response</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>RAG Internal Processing</h2>
+
+            <div id="output"></div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+function fakeEmbedding(text){
+
+    let vector = [];
+
+    for(let i=0;i<8;i++){
+
+        let total = 0;
+
+        for(let j=0;j<text.length;j++){
+            total += text.charCodeAt(j) * (i + 1);
+        }
+
+        vector.push((total % 1000) / 1000);
+    }
+
+    return vector;
+}
+
+function similarity(vec1, vec2){
+
+    let score = 0;
+
+    for(let i=0;i<vec1.length;i++){
+        score += 1 - Math.abs(vec1[i] - vec2[i]);
+    }
+
+    return score.toFixed(2);
+}
+
+function runRAG(){
+
+    const kb = document.getElementById("knowledgeBase").value;
+
+    const query = document.getElementById("queryInput").value;
+
+    const output = document.getElementById("output");
+
+    output.innerHTML = "";
+
+    // STEP 1 CHUNKING
+
+    const chunks = kb
+        .split(".")
+        .map(c => c.trim())
+        .filter(c => c.length > 0);
+
+    const chunkVectors = chunks.map(chunk => ({
+        text: chunk,
+        vector: fakeEmbedding(chunk)
+    }));
+
+    const queryVector = fakeEmbedding(query);
+
+    // STEP 2 VECTOR MATCHING
+
+    const scoredChunks = chunkVectors.map(item => ({
+        ...item,
+        score: similarity(item.vector, queryVector)
+    }));
+
+    scoredChunks.sort((a,b) => b.score - a.score);
+
+    const topChunks = scoredChunks.slice(0,2);
+
+    // DISPLAY STEP 1
+
+    output.innerHTML += `
+        <div class="step">
+            <div class="step-title">
+                Step 1: Chunking Documents
+            </div>
+
+            ${chunks.map(chunk => `
+                <div class="chunk">
+                    ${chunk}
+                </div>
+            `).join("")}
+        </div>
+    `;
+
+    // DISPLAY STEP 2
+
+    output.innerHTML += `
+        <div class="step">
+            <div class="step-title">
+                Step 2: Creating Embeddings
+            </div>
+
+            ${chunkVectors.map(item => `
+                <div class="chunk">
+                    ${item.text}
+
+                    <div class="vector">
+                        [${item.vector.join(", ")}]
+                    </div>
+                </div>
+            `).join("")}
+        </div>
+    `;
+
+    // DISPLAY QUERY
+
+    output.innerHTML += `
+        <div class="step">
+            <div class="step-title">
+                Step 3: Convert User Query Into Vector
+            </div>
+
+            <div class="chunk">
+                ${query}
+
+                <div class="vector">
+                    [${queryVector.join(", ")}]
+                </div>
+            </div>
+        </div>
+    `;
+
+    // DISPLAY MATCHING
+
+    output.innerHTML += `
+        <div class="step">
+            <div class="step-title">
+                Step 4: Vector Similarity Search
+            </div>
+
+            ${scoredChunks.map(item => `
+                <div class="chunk ${topChunks.includes(item) ? 'match' : ''}">
+                    <strong>Similarity Score:</strong> ${item.score}
+                    <br><br>
+                    ${item.text}
+                </div>
+            `).join("")}
+        </div>
+    `;
+
+    // DISPLAY RETRIEVAL
+
+    output.innerHTML += `
+        <div class="step">
+            <div class="step-title">
+                Step 5: Retriever Fetches Top Chunks
+            </div>
+
+            ${topChunks.map(item => `
+                <div class="chunk match">
+                    ${item.text}
+                </div>
+            `).join("")}
+        </div>
+    `;
+
+    // FINAL LLM
+
+    output.innerHTML += `
+        <div class="step">
+            <div class="step-title">
+                Step 6: LLM Generates Final Response
+            </div>
+
+            <div class="llm-box">
+                Based on retrieved context, the AI suggests that Zomato can improve Healthy Mode by implementing stricter healthy-food filtering, adding calorie and protein indicators, and using AI-driven personalization based on user fitness goals.
+            </div>
+        </div>
+    `;
+}
+
+runRAG();
+
+</script>
+
+</body>
+</html>
